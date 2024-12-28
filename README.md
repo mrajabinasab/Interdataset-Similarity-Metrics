@@ -25,7 +25,7 @@ df1 = pd.read_csv('df1.csv')
 df2 = pd.read_csv('df2.csv')
 
 # Calculate the values of the two metrics, namely Difference in Explained Variance and Angle Difference
-evd, ad = PCAMetric(df1, df2)
+evd, ad = PCAMetric(df1, df2, 1)
 ```
 
 The Average Angle Difference (AAD) metric is also implemented and can be used as a model-agnostic approach for evaluating the performance of feature selection:
