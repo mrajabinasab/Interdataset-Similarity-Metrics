@@ -31,7 +31,7 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     Args:
         data_base (array | DataFrame): The original data to use as a base
         data_comp (array | DataFrame): The data that are being compared to the base
-        num_components (int): int, the number of components to consider default is all
+        num_components (int): int, the number of components to consider for explained variance difference (default is all)
         preprocess (Literal['std', 'mean']): The type of preprocessing to use
             'std': rescale by dividing standard deviation (default) 
             'mean': Mean-subtracted data
@@ -68,7 +68,7 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     b_proj = b_pca.fit_transform(b_scaled)
     c_proj = c_pca.fit_transform(c_scaled)
 
-    var_difference = 0.5*sum(abs(b_pca.explained_variance_ratio_- c_pca.explained_variance_ratio_))
+    var_difference = sum(abs(b_pca.explained_variance_ratio_- c_pca.explained_variance_ratio_))
 
     # len_b = np.sqrt(b_pca.components_[0].dot(b_pca.components_[0]))
     # len_c = np.sqrt(c_pca.components_[0].dot(c_pca.components_[0]))
