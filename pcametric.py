@@ -1,25 +1,104 @@
 import numpy as np
+
+from typing import Tuple, List, Literal
+from numpy import ndarray
+from pandas import DataFrame
+
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+def _bound(value: float, range: Tuple[float, float]) -> float:
+    """Bound a value between two values
+    
+    Args:
+        range (Tuple[float, float]): The lower and upper bounds
+        value (float): The value to bound
+    
+    Returns:
+        float: The bounded value
+    
+    Example:
+    >>> _bound(0.5,(0, 1))
+    0.5
+    """
+    low, high = range
+    return max(low, min(high, value))
 
-def PCAMetric(realdata, fsdata, num_components = 1):
-    r_scaled = StandardScaler().fit_transform(realdata)
-    f_scaled = StandardScaler().fit_transform(fsdata)
-    rpca = PCA(n_components=num_components)
-    fpca = PCA(n_components=num_components)
-    r_pca = rpca.fit_transform(r_scaled)
-    f_pca = fpca.fit_transform(f_scaled)
-    var_difference = sum(abs(rpca.explained_variance_ratio_- fpca.explained_variance_ratio_))
-    len_r = np.sqrt(rpca.components_[0].dot(rpca.components_[0]))
-    len_f = np.sqrt(fpca.components_[0].dot(fpca.components_[0]))
-    rpca_comp_np = rpca.components_[0]
-    angle_diff = min([np.arccos(rpca_comp_np @ (s*fpca.components_[0])) for s in [1,-1]])/(len_r*len_f)
+def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, num_components: int = None, preprocess: Literal['std', 'mean'] = 'std') -> Tuple[dict, ndarray, ndarray]:
+    """Function for claculating the difference in eigenvalues and eigenvectors 
+    of the principal components of the two datasets.
+    
+    Args:
+        data_base (array | DataFrame): The original data to use as a base
+        data_comp (array | DataFrame): The data that are being compared to the base
+        num_components (int): int, the number of components to consider default is all
+        preprocess (Literal['std', 'mean']): The type of preprocessing to use
+            'std': rescale by dividing standard deviation (default) 
+            'mean': Mean-subtracted data
+    
+    Returns:
+        Dict[str, float]: The results of the comparison (explained variance difference and component angle difference)
+        array: the projection of the base data
+        array: the projection of the comparison data
+
+    Example:
+    >>> import pandas as pd
+    >>> from sklearn.datasets import load_iris
+    >>> iris = load_iris()
+    >>> X = pd.DataFrame(iris.data, columns=iris.feature_names)
+    >>> results, r_pca, f_pca = PCAMetric(X, X)
+    >>> results['exp_var_diff']
+    0.0
+    >>> results['comp_angle_diff']
+    0.0
+    """
+    match preprocess:
+        case 'std':
+            b_scaled = StandardScaler().fit_transform(data_base)
+            c_scaled = StandardScaler().fit_transform(data_comp)
+        case 'mean':
+            b_scaled = data_base - np.mean(data_base, axis=0)
+            c_scaled = data_comp - np.mean(data_comp, axis=0)
+        case _:
+            raise ValueError("Invalid scaler keyword")
+
+    b_pca = PCA(n_components=num_components)
+    c_pca = PCA(n_components=num_components)
+
+    b_proj = b_pca.fit_transform(b_scaled)
+    c_proj = c_pca.fit_transform(c_scaled)
+
+    var_difference = 0.5*sum(abs(b_pca.explained_variance_ratio_- c_pca.explained_variance_ratio_))
+
+    # len_b = np.sqrt(b_pca.components_[0].dot(b_pca.components_[0]))
+    # len_c = np.sqrt(c_pca.components_[0].dot(c_pca.components_[0]))
+
+    angle_diff = min([np.arccos(_bound(b_pca.components_[0] @ (s*c_pca.components_[0]),(-1,1))) for s in [1,-1]])#/(len_r*len_f)
+
     results = {'exp_var_diff': var_difference, 'comp_angle_diff': (angle_diff*2)/np.pi}
-    return results, r_pca, f_pca
+    return results, b_proj, c_proj
 
 
-def AAD(X, selected_features):
+def AAD(X: DataFrame, selected_features: List[str]) -> float:
+    """Function for calculating the average angle difference of the selected features
+
+    Args:
+        X (DataFrame): The full dataset
+        selected_features (List[str]): The list of selected features
+    
+    Returns:
+        float: The average angle difference score for the selected features
+    
+    Example:
+    >>> import pandas as pd
+    >>> from sklearn.datasets import load_iris
+    >>> iris = load_iris()
+    >>> X = pd.DataFrame(iris.data, columns=iris.feature_names)
+    >>> selected_features = ["sepal length (cm)", "sepal width (cm)"]
+    >>> AAD(X, selected_features) # doctest: +ELLIPSIS
+    0.32...
+    
+    """
     aad = 0
     not_selected_features = [q for q in range(len(X.columns)) if q not in selected_features]
     for p in not_selected_features:
@@ -32,3 +111,7 @@ def AAD(X, selected_features):
     else:
         aad = 0
     return aad
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
