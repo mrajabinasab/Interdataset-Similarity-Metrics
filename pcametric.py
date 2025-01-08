@@ -26,7 +26,7 @@ def _bound(value: float, range: Tuple[float, float]) -> float:
     low, high = range
     return max(low, min(high, value))
 
-def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, num_components: int = None, normalization: Literal['precise', 'approx'] = 'precise',   = 'std' preprocess: Literal['std', 'mean'] = 'std') -> Tuple[dict, ndarray, ndarray]:
+def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, num_components: int = None, normalization: Literal['precise', 'approx'] = 'precise',  preprocess: Literal['std', 'mean'] = 'std') -> Tuple[dict, ndarray, ndarray]:
     """Function for claculating the difference in eigenvalues and eigenvectors 
     of the principal components of the two datasets.
     
