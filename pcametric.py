@@ -7,6 +7,8 @@ from pandas import DataFrame
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+import warnings
+
 def _bound(value: float, range: Tuple[float, float]) -> float:
     """Bound a value between two values
     
@@ -24,7 +26,7 @@ def _bound(value: float, range: Tuple[float, float]) -> float:
     low, high = range
     return max(low, min(high, value))
 
-def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, num_components: int = None, preprocess: Literal['std', 'mean'] = 'std') -> Tuple[dict, ndarray, ndarray]:
+def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, num_components: int = None, normalization: Literal['precise', 'approx'] = 'precise',   = 'std' preprocess: Literal['std', 'mean'] = 'std') -> Tuple[dict, ndarray, ndarray]:
     """Function for claculating the difference in eigenvalues and eigenvectors 
     of the principal components of the two datasets.
     
@@ -32,9 +34,12 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
         data_base (array | DataFrame): The original data to use as a base
         data_comp (array | DataFrame): The data that are being compared to the base
         num_components (int): int, the number of components to consider for explained variance difference (default is all)
+        normalization (Literal['precise', 'approx']): The normalization method used
+            'precise': use the normalization factor as mentioned in the paper = d/(d+p-2)
+            'approx': set the normalizaton factor to 0.5
         preprocess (Literal['std', 'mean']): The type of preprocessing to use
             'std': rescale by dividing standard deviation (default) 
-            'mean': Mean-subtracted data
+            'mean': mean-subtracted data
     
     Returns:
         Dict[str, float]: The results of the comparison (explained variance difference and component angle difference)
@@ -52,6 +57,19 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     >>> results['comp_angle_diff']
     0.0
     """
+    if data_base.shape[1] == 1:
+        raise ValueError("Cannot use a dataset with d = 1.")
+    if num_components > data_base.shape[1]:
+        warnings.warn("Number of principal components is set to a value larger than d. Automatically setting it to d.", UserWarning)
+        num_components = data_base.shape[1]
+    match normalization:
+        case 'precise':
+            factor = data_base.shape[1] / (data_base.shape[1] + num_components - 2)
+        case 'approx':
+            factor = 0.5
+        case _:
+            raise ValueError("Invalid normalization keyword")
+            
     match preprocess:
         case 'std':
             b_scaled = StandardScaler().fit_transform(data_base)
@@ -60,7 +78,7 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
             b_scaled = data_base - np.mean(data_base, axis=0)
             c_scaled = data_comp - np.mean(data_comp, axis=0)
         case _:
-            raise ValueError("Invalid scaler keyword")
+            raise ValueError("Invalid scaling keyword")
 
     b_pca = PCA(n_components=num_components)
     c_pca = PCA(n_components=num_components)
@@ -68,7 +86,7 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     b_proj = b_pca.fit_transform(b_scaled)
     c_proj = c_pca.fit_transform(c_scaled)
 
-    var_difference = sum(abs(b_pca.explained_variance_ratio_- c_pca.explained_variance_ratio_))
+    var_difference = factor * sum(abs(b_pca.explained_variance_ratio_- c_pca.explained_variance_ratio_))
 
     # len_b = np.sqrt(b_pca.components_[0].dot(b_pca.components_[0]))
     # len_c = np.sqrt(c_pca.components_[0].dot(c_pca.components_[0]))
