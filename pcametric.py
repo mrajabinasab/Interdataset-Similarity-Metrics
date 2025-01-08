@@ -57,6 +57,8 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     >>> results['comp_angle_diff']
     0.0
     """
+    if num_components is None:
+        num_components = data_base.shape[1]
     if data_base.shape[1] == 1:
         raise ValueError("Cannot use a dataset with d = 1.")
     if num_components > data_base.shape[1]:
