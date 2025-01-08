@@ -4,6 +4,14 @@ This document presents the implementation of two novel metrics for measuring int
 
 Jupyter notebooks are provided for the experiments presented in the paper. You can run the code to reproduce the results.
 
+| Notebook | Description |
+| --- | --- |
+| [Pre-Investigation](Theoretical_Preinvestigation.ipynb) | Investigation of general properties of the new metrics |
+| [Use Case 1](Synthetic_Data_evaluation.ipynb) | Examples from the paper for evaluation of synthetic tabular data |
+| - [Figure 3](https://github.com/notna07/ctgan-with-checkpoints/blob/main/gen_model_training_behaviour.ipynb) | Codebook in different repository due to licencing |
+| - [Figure 4](https://github.com/schneiderkamplab/syntheval-model-benchmark-example/blob/main/metric_correlations.ipynb) | Codebook in different repository to avoid duplicate information |
+| [Use Case 2](Feature_Selection_Evaluation.ipynb) | Experiments from the paper on feature selection evaluation |
+
 ## Installation
 
 You can install the package using pip:
