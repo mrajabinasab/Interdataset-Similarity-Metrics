@@ -32,8 +32,13 @@ import pandas as pd
 df1 = pd.read_csv('df1.csv')
 df2 = pd.read_csv('df2.csv')
 
+# Setting Parameters
+num_components = 1
+normalization = "precise"
+preprocess = "std"
+
 # Calculate the values of the two metrics, namely Difference in Explained Variance and Angle Difference
-result, _, _ = PCAMetric(df1, df2, 1)
+result, _, _ = PCAMetric(df1, df2, num_components, normalization, preprocess)
 edv, ad = result['exp_var_diff'], result['comp_angle_diff']
 ```
 
