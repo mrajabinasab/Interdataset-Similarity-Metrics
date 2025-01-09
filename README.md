@@ -32,7 +32,7 @@ import pandas as pd
 df1 = pd.read_csv('df1.csv')
 df2 = pd.read_csv('df2.csv')
 
-# Setting Parameters
+# Setting parameters
 num_components = 1
 normalization = "precise"
 preprocess = "std"
