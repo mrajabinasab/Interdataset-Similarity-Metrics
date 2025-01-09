@@ -7,7 +7,7 @@ Jupyter notebooks are provided for the experiments presented in the paper. You c
 | Notebook | Description |
 | --- | --- |
 | [Pre-Investigation](https://github.com/mrajabinasab/Interdataset-Similarity-Metrics/blob/main/Theoretical_Preinvestigation.ipynb) | Investigation of general properties of the new metrics |
-| [Use Case 1](https://github.com/mrajabinasab/Interdataset-Similarity-Metrics/blob/main/Synthetic_Data_evaluation.ipynb) | Examples from the paper for evaluation of synthetic tabular data |
+| [Use Case 1](https://github.com/mrajabinasab/Interdataset-Similarity-Metrics/blob/main/Synthetic_Data_Evaluation.ipynb) | Examples from the paper for evaluation of synthetic tabular data |
 | - [Figure 3](https://github.com/notna07/ctgan-with-checkpoints/blob/main/gen_model_training_behaviour.ipynb) | Codebook in different repository due to licencing |
 | - [Figure 4](https://github.com/schneiderkamplab/syntheval-model-benchmark-example/blob/main/metric_correlations.ipynb) | Codebook in different repository to avoid duplicate information |
 | [Use Case 2](https://github.com/mrajabinasab/Interdataset-Similarity-Metrics/blob/main/Feature_Selection_Evaluation.ipynb) | Experiments from the paper on feature selection evaluation |
