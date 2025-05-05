@@ -65,12 +65,14 @@ It is noteworthy that for all the metrics above, a lower value indicates greater
 If you use our metrics in your research, please cite the original paper:
 
 ```
-@inproceedings{rajabinasab2025interdatasetsimilarity,
-  title={Metrics for Inter-Dataset Similarity with Example Applications in Synthetic Data and Feature Selection Evaluation},
-  author={Rajabinasab, Muhammad and Lautrup, Anton D. and Zimek, Arthur},
-  booktitle={Proceedings of the 2025 SIAM International Conference on Data Mining (SDM)},
-  pages={TBD},
-  year={2025},
-  organization={SIAM}
+@inbook{doi:10.1137/1.9781611978520.57,
+author = {Muhammad Rajabinasab and Anton Lautrup and Arthur Zimek},
+title = {Metrics for Inter-Dataset Similarity with Example Applications in Synthetic Data and Feature Selection Evaluation},
+booktitle = {Proceedings of the 2025 SIAM International Conference on Data Mining (SDM)},
+chapter = {},
+pages = {527-537},
+doi = {10.1137/1.9781611978520.57},
+URL = {https://epubs.siam.org/doi/abs/10.1137/1.9781611978520.57},
+eprint = {https://epubs.siam.org/doi/pdf/10.1137/1.9781611978520.57},
 }
 ```
