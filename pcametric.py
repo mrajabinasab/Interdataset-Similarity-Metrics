@@ -99,7 +99,7 @@ def PCAMetric(data_base: ndarray | DataFrame, data_comp: ndarray | DataFrame, nu
     return results, b_proj, c_proj
 
 
-def AAD(X: DataFrame, selected_features: List[str]) -> float:
+def AAD(X: DataFrame, selected_features: List[str], num_components: int = 1) -> float:
     """Function for calculating the average angle difference of the selected features
 
     Args:
@@ -124,7 +124,7 @@ def AAD(X: DataFrame, selected_features: List[str]) -> float:
     for p in not_selected_features:
         my_X = X.copy()
         my_X.iloc[:, p] = 0
-        result, _, _ = PCAMetric(X, my_X)
+        result, _, _ = PCAMetric(X, my_X, num_components)
         aad += result['comp_angle_diff']
     if len(not_selected_features) != 0:
         aad /= len(not_selected_features)
