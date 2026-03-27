@@ -155,3 +155,8 @@ def AAD(X: DataFrame, selected_features: List[str], num_components: int = 1) -> 
         aad_total += (angle_diff * 2) / np.pi
 
     return aad_total / len(not_selected_indices)
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
