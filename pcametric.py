@@ -119,19 +119,39 @@ def AAD(X: DataFrame, selected_features: List[str], num_components: int = 1) -> 
     0.32...
     
     """
-    aad = 0
-    not_selected_features = [q for q in range(len(X.columns)) if q not in selected_features]
-    for p in not_selected_features:
-        my_X = X.copy()
-        my_X.iloc[:, p] = 0
-        result, _, _ = PCAMetric(X, my_X, num_components)
-        aad += result['comp_angle_diff']
-    if len(not_selected_features) != 0:
-        aad /= len(not_selected_features)
+    n_samples, n_features = X.shape
+    
+    if all(isinstance(f, str) for f in selected_features):
+        selected_indices = [X.columns.get_loc(f) for f in selected_features]
     else:
-        aad = 0
-    return aad
+        selected_indices = selected_features
+        
+    not_selected_indices = [i for i in range(n_features) if i not in selected_indices]
+    
+    if not not_selected_indices:
+        return 0.0
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    solver = 'randomized' if (max(n_samples, n_features) > 500 else 'full'
+
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    base_pca = PCA(n_components=num_components, svd_solver=solver)
+    base_pca.fit(X_scaled)
+    base_vector = base_pca.components_[0]
+
+    aad_total = 0.0
+    
+    for p in not_selected_indices:
+        X_comp = X_scaled.copy()
+        X_comp[:, p] = 0 
+        
+        comp_pca = PCA(n_components=num_components, svd_solver=solver)
+        comp_pca.fit(X_comp)
+        
+        dot_product = np.dot(base_vector, comp_pca.components_[0])
+        angle_diff = np.arccos(_bound(abs(dot_product), (0, 1)))
+        
+        aad_total += (angle_diff * 2) / np.pi
+
+    return aad_total / len(not_selected_indices)
