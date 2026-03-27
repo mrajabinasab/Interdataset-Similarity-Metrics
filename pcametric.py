@@ -131,7 +131,7 @@ def AAD(X: DataFrame, selected_features: List[str], num_components: int = 1) -> 
     if not not_selected_indices:
         return 0.0
 
-    solver = 'randomized' if (max(n_samples, n_features) > 500 else 'full'
+    solver = 'randomized' if (max(n_samples, n_features)) > 500 else 'full'
 
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
